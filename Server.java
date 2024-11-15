@@ -17,24 +17,16 @@ public class Server {
         }
     }
 
+    // method that will connect clientsNum clients to the server
     public void serve(int clientsNum) {
 
         Socket client;
 
         for (int i = 0; i < clientsNum; i++) {
             try {
+                // accepts the clients and creates a new Thread for each one of the i clients
                 client = serversocket.accept();
-
-                PrintWriter out = new PrintWriter(client.getOutputStream());
-                BufferedReader in = new BufferedReader(new InputStreamReader(client.getInputStream()));
-
-                String line = in.readLine();
-
-                if (line.equals("12345")) {
-
-                } else {
-                    out.println("couldn't handshake");
-                }
+                (new ClientHandler(client)).start();
 
             } catch (Exception e) {
                 e.printStackTrace();
@@ -43,6 +35,7 @@ public class Server {
         }
     }
 
+    // method to disconnect server
     public void disconnect() {
         try {
             this.serversocket.close();
@@ -54,5 +47,31 @@ public class Server {
     // getter methos for private field
     public ServerSocket getServerSocket() {
         return this.serversocket;
+    }
+
+    private class ClientHandler extends Thread {
+
+        Socket sock;
+
+        public ClientHandler(Socket sock) {
+            this.sock = sock;
+        }
+
+        public void run(){
+            PrintWriter out = null;
+            BufferedReader in = null;
+
+            try{
+                out = new PrintWriter(sock.getOutputStream());
+                in = new BufferedReader(new InputStreamReader(sock.getInputStream()));
+
+                //reads from the server's input stream to check the handshake
+                String line = in.readLine();
+                
+                if(!(line.equals("12345"))){
+                    out.println("couldn't handshake");
+                }
+            }
+        }
     }
 }
