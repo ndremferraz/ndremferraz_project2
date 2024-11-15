@@ -1,3 +1,5 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 
@@ -24,6 +26,28 @@ public class Client {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+    }
+
+    public String request(String number) {
+        try {
+
+            PrintWriter print = new PrintWriter(this.clientsocket.getOutputStream());
+            BufferedReader in = new BufferedReader(new InputStreamReader(this.clientsocket.getInputStream()));
+            print.println(number);
+            print.close();
+
+            String msg = in.readLine();
+
+            in.close();
+
+            return msg;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return "";
 
     }
 
